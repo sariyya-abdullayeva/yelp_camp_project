@@ -3,7 +3,8 @@ var app= express ();
 
 app.set("view engine", "ejs");
 
-
+// <%- include("partials/header") %>
+// <%- include("partials/footer") %>
 
 app.get("/", function(req, res){
     res.render("landing");

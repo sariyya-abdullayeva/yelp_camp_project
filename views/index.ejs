@@ -11,13 +11,14 @@
     </header>
 
     <div class="row text-center" style="display: flex; flex-wrap: wrap;" >
-        <% campgrounds.forEach(function(camp){  %>
+        <% campgrounds.forEach(function(campground){  %>
             <div class="col-md-3 col-sm-6">
                 <div class="thumbnail"> 
-                    <img src="<%= camp.image %>" alt="pics of camp places">
+                    <img src="<%= campground.image %>" alt="pics of camp places">
                     <div class="caption">
-                        <h4> <%= camp.name %> </h4> 
+                        <h4> <%= campground.name %> </h4> 
                     </div>
+                    <a href="/campgrounds/<%=campground._id%>" class="btn btn-primary">More Info</a>
                 </div>
             </div>
         <%});%>

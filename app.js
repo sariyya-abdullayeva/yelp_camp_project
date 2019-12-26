@@ -14,7 +14,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 
 //Connect DB to Express
-mongoose.connect("mongodb://localhost/yelp_app", {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost:27017/yelp_app", {useNewUrlParser: true, useUnifiedTopology: true });
 
 //to include header and footer tepmlates to other pages
 // <%- include("partials/header") %>
@@ -70,19 +70,26 @@ app.get('/campgrounds', function(req, res){
 // creating a new campGround
 app.post('/campgrounds', function(req, res){
     //get data from FORM 
-    var name = req.body.name
-    var image = req.body.image
+    var nameNew = req.body.name
+    var imageNew = req.body.image
     
     //and add to campGround
     var newCampGround = {
-        name: name,
-        image: image
+        name: nameNew,
+        image: imageNew
     };
 
-    campGrounds.push(newCampGround);
+    console.log(newCampGround);
 
-    // redirect to campgrounds page
-    res.redirect('/campgrounds');
+//   Create new campground and save to db; 
+    Campground.create(newCampGround, function(err, newCamp){
+        if(err){
+            console.log(err)
+        }else{
+            // redirect to campgrounds page
+            res.redirect('/campgrounds');
+        }
+    })   
 })
 
 

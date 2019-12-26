@@ -24,15 +24,16 @@ mongoose.connect("mongodb://localhost:27017/yelp_app", {useNewUrlParser: true, u
 //Schema Setup
 var campgroundSchema = new mongoose.Schema({
     name: String,
-    image: String
+    image: String,
+    description: String
 })
 
 var Campground = mongoose.model('Campground', campgroundSchema);
 // Campground.create(
 //     {
 //         name:'Sarema Island', 
-//         image:'https://images.unsplash.com/photo-1500581276021-a4bbcd0050c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60'
-    
+//         image:'https://images.unsplash.com/photo-1500581276021-a4bbcd0050c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+//         description: 'This is a magical Baltic island that is infused with Estonian magical soul'
 //     }, function(err, camp){
 //         if(err){
 //             console.log(err)
@@ -60,7 +61,7 @@ app.get('/campgrounds', function(req, res){
         if(err){
             console.log(err)
         }else{
-            res.render("campgrounds", {campgrounds:camps})
+            res.render("index", {campgrounds:camps})
         }
     })
     
@@ -72,11 +73,14 @@ app.post('/campgrounds', function(req, res){
     //get data from FORM 
     var nameNew = req.body.name
     var imageNew = req.body.image
+    var descriptionNew = req.body.description
+
     
     //and add to campGround
     var newCampGround = {
         name: nameNew,
-        image: imageNew
+        image: imageNew,
+        description: descriptionNew
     };
 
     console.log(newCampGround);
@@ -90,15 +94,29 @@ app.post('/campgrounds', function(req, res){
             res.redirect('/campgrounds');
         }
     })   
-})
+});
 
 
+//NEW ROUTE- SHOULD BE PLACED BEFORE SHOW ROUTER(/:id)
 //submiting form that will send a data to post/campgrounds route
 app.get('/campgrounds/new', function(req, res){
     res.render('new.ejs');
 });
 
-
+// SHOW ROUTE- to show more info about pix in INDEX page
+app.get('/campgrounds/:id', function(req, res){
+    //find campground with the id
+    var campId = req.params.id
+    
+    Campground.findById(campId, function(err, foundCampGround){
+      if(err){
+          console.log(err)
+      }else{
+        //render show template with that campground
+        res.render('show', {campground:foundCampGround})
+      }
+  })
+});
 
 
 

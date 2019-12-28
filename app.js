@@ -1,50 +1,18 @@
-var express    = require("express")
-var app        = express ();
-//to make post requests
-var bodyParser = require("body-parser");
-//For DB
-var mongoose   = require("mongoose");
+var express    = require("express"),
+    app        = express (),
+    bodyParser = require("body-parser"),
+    mongoose   = require("mongoose"),
+    Campground = require("./models/campground"),
+    seedDB     = require("./seeds");
 
-
-
-//tell express use ejs as a style for page adresses
+// seedDB();
 app.set("view engine", "ejs");
-
-//tell express to use body-parser
 app.use(bodyParser.urlencoded({extended:true}));
-
-//Connect DB to Express
-mongoose.connect("mongodb://localhost:27017/yelp_app", {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost:27017¦/yelp_app", {useNewUrlParser: true, useUnifiedTopology: true });
 
 //to include header and footer tepmlates to other pages
 // <%- include("partials/header") %>
 // <%- include("partials/footer") %>
-
-
-//Schema Setup
-var campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-})
-
-var Campground = mongoose.model('Campground', campgroundSchema);
-// Campground.create(
-//     {
-//         name:'Sarema Island', 
-//         image:'https://images.unsplash.com/photo-1500581276021-a4bbcd0050c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-//         description: 'This is a magical Baltic island that is infused with Estonian magical soul'
-//     }, function(err, camp){
-//         if(err){
-//             console.log(err)
-//         }else{
-//             console.log("OKAY")
-//             console.log(camp)
-//         }
-//     }
-
-// )
-
 
 
 // ================= ROUTES GO HERE===================================
@@ -68,7 +36,7 @@ app.get('/campgrounds', function(req, res){
 })
 
 
-// creating a new campGround
+//Creating a new campGround
 app.post('/campgrounds', function(req, res){
     //get data from FORM 
     var nameNew = req.body.name
@@ -85,7 +53,7 @@ app.post('/campgrounds', function(req, res){
 
     console.log(newCampGround);
 
-//   Create new campground and save to db; 
+//Create new campground and save to db; 
     Campground.create(newCampGround, function(err, newCamp){
         if(err){
             console.log(err)
@@ -98,7 +66,7 @@ app.post('/campgrounds', function(req, res){
 
 
 //NEW ROUTE- SHOULD BE PLACED BEFORE SHOW ROUTER(/:id)
-//submiting form that will send a data to post/campgrounds route
+//Submiting form that will send a data to post/campgrounds route
 app.get('/campgrounds/new', function(req, res){
     res.render('new.ejs');
 });
@@ -108,10 +76,11 @@ app.get('/campgrounds/:id', function(req, res){
     //find campground with the id
     var campId = req.params.id
     
-    Campground.findById(campId, function(err, foundCampGround){
+    Campground.findById(campId).populate("comments").exec(function(err, foundCampGround){
       if(err){
           console.log(err)
       }else{
+        console.log(foundCampGround);
         //render show template with that campground
         res.render('show', {campground:foundCampGround})
       }

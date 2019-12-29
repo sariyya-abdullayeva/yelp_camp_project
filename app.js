@@ -3,7 +3,8 @@ var express    = require("express"),
     bodyParser = require("body-parser"),
     mongoose   = require("mongoose"),
     Campground = require("./models/campground"),
-    seedDB     = require("./seeds");
+    Comment    = require ("./models/comment");
+    // seedDB     = require("./seeds");
 
 // seedDB();
 app.set("view engine", "ejs");
@@ -19,7 +20,7 @@ mongoose.connect("mongodb://localhost:27017¦/yelp_app", {useNewUrlParser: true,
 //main page
 app.get("/", function(req, res){
     res.render("landing");
-})
+});
 
 
 //list of camping grounds
@@ -29,11 +30,10 @@ app.get('/campgrounds', function(req, res){
         if(err){
             console.log(err)
         }else{
-            res.render("index", {campgrounds:camps})
+            res.render("campgrounds/index", {campgrounds:camps})
         }
     })
-    
-})
+});
 
 
 //Creating a new campGround
@@ -51,9 +51,7 @@ app.post('/campgrounds', function(req, res){
         description: descriptionNew
     };
 
-    console.log(newCampGround);
-
-//Create new campground and save to db; 
+    //Create new campground and save to db; 
     Campground.create(newCampGround, function(err, newCamp){
         if(err){
             console.log(err)
@@ -61,14 +59,14 @@ app.post('/campgrounds', function(req, res){
             // redirect to campgrounds page
             res.redirect('/campgrounds');
         }
-    })   
+    });   
 });
 
 
 //NEW ROUTE- SHOULD BE PLACED BEFORE SHOW ROUTER(/:id)
 //Submiting form that will send a data to post/campgrounds route
 app.get('/campgrounds/new', function(req, res){
-    res.render('new.ejs');
+    res.render('campgrounds/new');
 });
 
 // SHOW ROUTE- to show more info about pix in INDEX page
@@ -80,23 +78,44 @@ app.get('/campgrounds/:id', function(req, res){
       if(err){
           console.log(err)
       }else{
-        console.log(foundCampGround);
         //render show template with that campground
-        res.render('show', {campground:foundCampGround})
+        res.render('campgrounds/show', {campground:foundCampGround})
       }
-  })
+  });
 });
 
+// ====================
+// COMMENTS ROUTES
+// ====================
+app.get('/campgrounds/:id/comments/new', function(req, res){
+    Campground.findById(req.params.id, function(err, campground){
+        if(err){
+            console.log(err)
+        }else{
+            res.render('comments/new', {campground:campground})
+        }
+    });
+});
 
-
-
-
-
-
-
-
+app.post('/campgrounds/:id/comments', function(req,res) {
+    Campground.findById(req.params.id, function(err, campground){
+        if(err){
+            console.log(err)
+        }else{
+            Comment.create(req.body.comment, function(err, comment){
+                if(err){
+                    console.log(err)
+                }else{
+                    campground.comments.push(comment);
+                    campground.save();
+                    res.redirect('/campgrounds/' + campground._id)
+                }
+            });
+        }
+    });
+});
 
 
 app.listen(3000, function(){
     console.log("yelp_camp app started" );
-});
+})

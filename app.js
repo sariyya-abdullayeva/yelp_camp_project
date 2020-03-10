@@ -4,9 +4,9 @@ var express    = require("express"),
     mongoose   = require("mongoose"),
     Campground = require("./models/campground"),
     Comment    = require ("./models/comment");
-    // seedDB     = require("./seeds");
+    seedDB     = require("./seeds");
 
-// seedDB();
+seedDB();
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 mongoose.connect("mongodb://localhost:27017¦/yelp_app", {useNewUrlParser: true, useUnifiedTopology: true });

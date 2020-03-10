@@ -12,4 +12,4 @@ var campgroundSchema = new mongoose.Schema({
 })
 
 
-module.exports = mongoose.model("Campground", campgroundSchema);
+module.exports = mongoose.model("Campground", campgroundSchema); 

@@ -155,8 +155,20 @@ app.post('/register', function(req, res){
 app.get('/login', function(req, res){
     res.render('login')
 })
+// hadling login logic with middleware app.post('login', middleware, callback function)
+app.post('/login',passport.authenticate('local', 
+    {
+        successRedirect: '/campgrounds',
+        failureRedirect: '/login'
 
+    }),function(req, res){ 
+})
 
+//log out
+app.get('/logout', function(req,res){
+    req.logout();
+    res.redirect('/campgrounds')
+})
 
 app.listen(3000, function(){
     console.log("yelp_camp app started" );

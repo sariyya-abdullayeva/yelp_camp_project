@@ -2,19 +2,35 @@ var express    = require("express"),
     app        = express (),
     bodyParser = require("body-parser"),
     mongoose   = require("mongoose"),
+    //authentication==
+    passport   = require('passport'),
+    LocalStrategy  = require('passport-local'),
+
     Campground = require("./models/campground"),
     Comment    = require ("./models/comment");
+    User       = require('./models/user'),
     seedDB     = require("./seeds");
 
-seedDB();
-app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({extended:true}));
 mongoose.connect("mongodb://localhost:27017¦/yelp_app", {useNewUrlParser: true, useUnifiedTopology: true });
+app.use(bodyParser.urlencoded({extended:true}));
+app.set("view engine", "ejs");
+seedDB();
 
-//to include header and footer tepmlates to other pages
-// <%- include("partials/header") %>
-// <%- include("partials/footer") %>
+// Passport Configurations
+app.use(require('express-session')({
+    secret: 'This too obvious',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
+// <!-- to include header and footer tepmlates to other pages -->
+// <!-- <%- include("partials/header") %> -->
+// <!-- <%- include("partials/footer") %> -->
 
 // ================= ROUTES GO HERE===================================
 //main page
@@ -114,6 +130,32 @@ app.post('/campgrounds/:id/comments', function(req,res) {
         }
     });
 });
+
+//Auth ROUTES
+
+//show register form
+app.get('/register', function(req, res){
+    res.render('register');
+})
+
+app.post('/register', function(req, res){
+    var newUser = new User({username: req.body.username});
+    var password = req.body.password;
+    User.register(newUser, password, function(err, user){
+        if(err){
+            console.log(err);
+            return res.render('register')
+        }
+        passport.authenticate('local')(req, res, function(){
+            res.redirect('/campgrounds');
+        })
+    })
+})
+// show log in form
+app.get('/login', function(req, res){
+    res.render('login')
+})
+
 
 
 app.listen(3000, function(){

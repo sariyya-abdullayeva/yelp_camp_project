@@ -35,7 +35,7 @@ passport.deserializeUser(User.deserializeUser());
 // ================= ROUTES GO HERE===================================
 //main page
 app.get("/", function(req, res){
-    res.render("landing");
+    res.render("landing", {currentUser: req.user});
 });
 
 
@@ -46,7 +46,7 @@ app.get('/campgrounds', function(req, res){
         if(err){
             console.log(err)
         }else{
-            res.render("campgrounds/index", {campgrounds:camps})
+            res.render("campgrounds/index", {campgrounds:camps, currentUser: req.user});
         }
     })
 });
@@ -103,7 +103,8 @@ app.get('/campgrounds/:id', function(req, res){
 // ====================
 // COMMENTS ROUTES
 // ====================
-app.get('/campgrounds/:id/comments/new', function(req, res){
+//isLoggedIn middleware function to check is the user logged in to write a comment
+app.get('/campgrounds/:id/comments/new', isLoggedIn, function(req, res){
     Campground.findById(req.params.id, function(err, campground){
         if(err){
             console.log(err)
@@ -113,7 +114,7 @@ app.get('/campgrounds/:id/comments/new', function(req, res){
     });
 });
 
-app.post('/campgrounds/:id/comments', function(req,res) {
+app.post('/campgrounds/:id/comments', isLoggedIn,function(req,res) {
     Campground.findById(req.params.id, function(err, campground){
         if(err){
             console.log(err)
@@ -169,6 +170,15 @@ app.get('/logout', function(req,res){
     req.logout();
     res.redirect('/campgrounds')
 })
+
+
+
+function isLoggedIn(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect('/login');
+}
 
 app.listen(3000, function(){
     console.log("yelp_camp app started" );

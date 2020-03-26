@@ -17,18 +17,22 @@ router.get('/', function(req, res){
 
 
 //CREATE - add new campground to DB
-router.post('/', function(req, res){
+router.post('/',isLoggedIn,function(req, res){
     //get data from FORM 
     var nameNew = req.body.name
     var imageNew = req.body.image
     var descriptionNew = req.body.description
-
+    var author = {
+        id: req.user._id,
+        username: req.user.username
+    };
     
     //and add to campGround
     var newCampGround = {
         name: nameNew,
         image: imageNew,
-        description: descriptionNew
+        description: descriptionNew,
+        author: author
     };
 
     //Create new campground and save to db; 
@@ -45,7 +49,7 @@ router.post('/', function(req, res){
 
 //NEW ROUTE- SHOULD BE PLACED BEFORE SHOW ROUTER(/:id)
 //Submiting form that will send a data to post/campgrounds route.Show form to create new campground
-router.get('/new', function(req, res){
+router.get('/new',isLoggedIn ,function(req, res){
     res.render('campgrounds/new');
 });
 
@@ -65,4 +69,11 @@ router.get('/:id', function(req, res){
   });
 });
 
+
+function isLoggedIn(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect('/login');
+}
 module.exports = router;

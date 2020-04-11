@@ -30,6 +30,11 @@ router.post('/register', function(req, res){
     })
 })
 
+// SHOW REGISTER FORM
+router.get('/login', function(req, res){
+    res.render('login', {message: req.flash('error')})
+})
+
 // hadling SIGN UP LOGIC with middleware 
 //router.post('login', middleware, callback function)
 router.post('/login',passport.authenticate('local', 
@@ -40,10 +45,7 @@ router.post('/login',passport.authenticate('local',
     }),function(req, res){ 
 })
 
-// SHOW REGISTER FORM
-router.get('/login', function(req, res){
-    res.render('login')
-})
+
 
 
 // LOG OUT

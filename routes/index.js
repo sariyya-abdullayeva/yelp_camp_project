@@ -32,7 +32,7 @@ router.post('/register', function(req, res){
 
 // SHOW REGISTER FORM
 router.get('/login', function(req, res){
-    res.render('login', {message: req.flash('error')})
+    res.render('login')
 })
 
 // hadling SIGN UP LOGIC with middleware 
@@ -51,6 +51,7 @@ router.post('/login',passport.authenticate('local',
 // LOG OUT
 router.get('/logout', function(req,res){
     req.logout();
+    req.flash('error', 'Logged out!')
     res.redirect('/campgrounds')
 })
 

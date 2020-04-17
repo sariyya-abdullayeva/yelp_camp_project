@@ -16,27 +16,28 @@ router.get('/register', function(req, res){
     res.render('register');
 })
 
+//Hadling SING UP LOGINC
 router.post('/register', function(req, res){
     var newUser = new User({username: req.body.username});
     var password = req.body.password;
     User.register(newUser, password, function(err, user){
         if(err){
-            console.log(err);
+            req.flash('error', err.message);
             return res.render('register')
         }
         passport.authenticate('local')(req, res, function(){
+            req.flash('success', "Welcome to Yelpcamp " + user.username);
             res.redirect('/campgrounds');
         })
     })
 })
 
-// SHOW REGISTER FORM
+// SHOW LOGIN FORM
 router.get('/login', function(req, res){
     res.render('login')
 })
 
-// hadling SIGN UP LOGIC with middleware 
-//router.post('login', middleware, callback function)
+// handling LOGIN LOGIC 
 router.post('/login',passport.authenticate('local', 
     {
         successRedirect: '/campgrounds',
@@ -46,21 +47,13 @@ router.post('/login',passport.authenticate('local',
 })
 
 
-
-
 // LOG OUT
 router.get('/logout', function(req,res){
     req.logout();
-    req.flash('error', 'Logged out!')
+    req.flash('success', 'Logged out!')
     res.redirect('/campgrounds')
 })
 
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect('/login');
-}
 
 
 module.exports = router;

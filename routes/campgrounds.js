@@ -23,6 +23,7 @@ router.post('/',middleware.isLoggedIn,function(req, res){
     var nameNew = req.body.name
     var imageNew = req.body.image
     var descriptionNew = req.body.description
+    var price   = req.body.price
     var author = {
         id: req.user._id,
         username: req.user.username
@@ -33,6 +34,7 @@ router.post('/',middleware.isLoggedIn,function(req, res){
         name: nameNew,
         image: imageNew,
         description: descriptionNew,
+        price: price,
         author: author
     };
 
